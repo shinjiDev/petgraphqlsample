@@ -1,6 +1,9 @@
 using DemoChoco;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using HotChocolate.Validation;
 using HotChocolate.Validation.Types;
+using HotChocolate.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services
@@ -49,9 +52,26 @@ builder.Services
     {
         o.EnableOneOf = true;
         o.StrictValidation = false;
+    })
+    .AddDiagnosticEventListener<MyExecutionEventListener>();
+builder.Services.AddOpenTelemetryTracing(
+    b =>
+    {
+        b.AddHttpClientInstrumentation();
+        b.AddAspNetCoreInstrumentation();
+        b.AddHotChocolateInstrumentation();
     });
+builder.Logging.AddOpenTelemetry(
+    b =>
+    {
+        b.IncludeFormattedMessage = true;
+        b.IncludeScopes = true;
+        b.ParseStateValues = true;
+    });
+builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["ApplicationInsights:ConnectionString"]);
+builder.Services.AddInMemorySubscriptions();
 var app = builder.Build();
-
+app.UseWebSockets();
 app.MapGraphQL();
 
 app.Run();

@@ -1,4 +1,6 @@
-﻿using HotChocolate.Types;
+﻿using HotChocolate.Execution;
+using HotChocolate.Subscriptions;
+using HotChocolate.Types;
 
 namespace HotChocolate.Validation.Types
 {
@@ -11,7 +13,16 @@ namespace HotChocolate.Validation.Types
 
             descriptor.Field("newMessage")
                 .Type<NonNullType<MessageType>>()
-                .Resolve(() => "foo");
+                .Resolve(context => context.GetEventMessage<MessageType>())
+                .Subscribe(async context =>
+                {
+                    var receiver = context.Service<ITopicEventReceiver>();
+
+                    ISourceStream stream =
+                        await receiver.SubscribeAsync<string, MessageType>("messageAdded");
+
+                    return stream;
+                });
 
             descriptor.Field("disallowedSecondRootField")
                 .Type<NonNullType<BooleanType>>()
