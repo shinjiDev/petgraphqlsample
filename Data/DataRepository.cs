@@ -63,6 +63,11 @@ namespace DemoChoco.Data
             "foo", "asd", "bar", "baz"
         };
 
+        public int[] integerList =
+        {
+            1, 2, 200, 1000
+        };
+
         public void AddCat(List<Object> cat)
         {
             cats.Add(new Cat
