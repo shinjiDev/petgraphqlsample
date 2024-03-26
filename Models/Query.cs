@@ -1,6 +1,7 @@
 ﻿using HotChocolate.Validation.Types;
 using Microsoft.AspNetCore.CookiePolicy;
 using DemoChoco.Data;
+using DemoChoco.Models;
 
 namespace HotChocolate.Validation
 {
@@ -72,11 +73,24 @@ namespace HotChocolate.Validation
             return dataRepository.humans.FirstOrDefault();
         }
 
-
-        // TODO: Might wanna fix logic later
-        public Human GetPet()
+        public IPet GetPet()
         {
-            return dataRepository.humans.FirstOrDefault();
+            return dataRepository.dogs.FirstOrDefault();
+        }
+
+        public IPet[] GetPets()
+        {
+            return dataRepository.cats.ToArray();
+        }
+
+        public IBeing GetBeing()
+        {
+            return dataRepository.dogs.FirstOrDefault();
+        }
+
+        public IBeing[] GetBeings()
+        {
+            return dataRepository.dogs.ToArray();
         }
 
         public object GetCatOrDog()
@@ -92,6 +106,11 @@ namespace HotChocolate.Validation
         public string[] GetStringList()
         {
             return dataRepository.stringList;
+        }
+
+        public int[] GetIntegerList()
+        {
+            return dataRepository.integerList;
         }
 
         public string GetFieldWithArg(
